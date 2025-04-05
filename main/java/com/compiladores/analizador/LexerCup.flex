@@ -36,7 +36,7 @@ espacio=[ ,\t,\r,\n]+
 ( String ) { return new Symbol(sym.Cadena, yychar, yyline, yytext()); }
 
 /* Palabra reservada return */
-( return ) { return new Symbol(sym.Return, yychar, yyline, yytext(); )}
+( "return" ) { return new Symbol(sym.Return, yychar, yyline, yytext()); }
 
 /* Palabra reservada If */
 ( if ) { return new Symbol(sym.If, yychar, yyline, yytext()); }

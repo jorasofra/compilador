@@ -4,16 +4,20 @@
  */
 package com.compiladores.layout;
 
-import com.compiladores.analizadorLexico.Lexer;
+import com.compiladores.analizador.Lexer;
+import com.compiladores.analizador.Sintax;
 import com.compiladores.bean.TipoTokens;
+import java.awt.Color;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java_cup.runtime.Symbol;
 import javax.swing.JFileChooser;
 
 /**
@@ -30,6 +34,8 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         this.setLocationRelativeTo(null);
+        txt_area_tokens_list.setEditable(false);
+        txt_area_sintactico.setEditable(false);
     }
 
     /**
@@ -44,13 +50,10 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_area_source_code = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txt_area_reserved_words = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         txt_area_tokens_list = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -58,6 +61,11 @@ public class MainWindow extends javax.swing.JFrame {
         txt_fld_file_path = new javax.swing.JTextField();
         btn_attach_file = new javax.swing.JButton();
         btn_analice = new javax.swing.JButton();
+        btn_sintactico = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txt_area_sintactico = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -65,10 +73,6 @@ public class MainWindow extends javax.swing.JFrame {
         txt_area_source_code.setRows(5);
         txt_area_source_code.setName("txt_area_fuente"); // NOI18N
         jScrollPane1.setViewportView(txt_area_source_code);
-
-        txt_area_reserved_words.setColumns(20);
-        txt_area_reserved_words.setRows(5);
-        jScrollPane2.setViewportView(txt_area_reserved_words);
 
         txt_area_tokens_list.setColumns(20);
         txt_area_tokens_list.setRows(5);
@@ -80,11 +84,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Tokens");
-
-        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Conteo de Palabras Reservadas");
+        jLabel2.setText("Tokens Analisis Lexico");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -93,22 +93,15 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(58, 58, 58))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3))
-                        .addContainerGap())))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3)
+                .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(108, 108, 108)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
-                .addGap(133, 133, 133))
+                .addGap(148, 148, 148))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,13 +112,8 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
 
@@ -136,17 +124,17 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(247, 247, 247)
                 .addComponent(jLabel4)
-                .addGap(226, 226, 226))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
+                .addContainerGap()
                 .addComponent(jLabel4)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         jLabel5.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
@@ -163,10 +151,17 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        btn_analice.setText("Analizar Codigo");
+        btn_analice.setText("Analisis Lexico");
         btn_analice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_analiceActionPerformed(evt);
+            }
+        });
+
+        btn_sintactico.setText("Analisis Sintactico");
+        btn_sintactico.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sintacticoActionPerformed(evt);
             }
         });
 
@@ -176,14 +171,18 @@ public class MainWindow extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btn_analice, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                    .addComponent(txt_fld_file_path))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_attach_file)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btn_analice, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
+                        .addComponent(btn_sintactico, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txt_fld_file_path)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_attach_file)))
+                .addGap(34, 34, 34))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -193,8 +192,40 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(txt_fld_file_path, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_attach_file))
-                .addGap(18, 18, 18)
-                .addComponent(btn_analice, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btn_analice, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+                    .addComponent(btn_sintactico, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
+        );
+
+        jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
+        jLabel3.setText("Analisis Sintactico");
+
+        txt_area_sintactico.setColumns(20);
+        txt_area_sintactico.setRows(5);
+        jScrollPane2.setViewportView(txt_area_sintactico);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(305, 305, 305)
+                .addComponent(jLabel3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -202,12 +233,13 @@ public class MainWindow extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -216,9 +248,11 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -233,33 +267,80 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_attach_fileActionPerformed
 
     private void btn_analiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_analiceActionPerformed
-        FileReader reader = createReader();
-        Lexer lex = new Lexer(reader);
-        String resultado = "";
-        String contadores = "";
-        int contador = 1;
+        txt_area_tokens_list.setText("");
+        int cont = 1;
         
+        Lexer lex = new Lexer(new StringReader(txt_area_source_code.getText()));
+        String resultado = "LINEA " + cont + "\t\tSIMBOLO\n";
+                
         while (true) {
             try {
                 TipoTokens tokens = lex.yylex();
                 if (tokens == null) {
-                    resultado += "FIN";
-                    this.txt_area_tokens_list.setText(resultado);
-                    this.txt_area_reserved_words.setText(contadores);
+                    txt_area_tokens_list.setText(resultado);
                     return;
                 }
-                resultado += "TOKEN " + contador + "=\t" + tokens + "\n";
                 
-                if (tokens == TipoTokens.PALABRA_RESERVADA){
-                    contadores += contar_palabras_reservadas(lex.lexema);
+                switch (tokens) {
+                    case Linea -> {
+                        cont++;
+                        resultado += "LINEA " + cont + "\n";
+                    }
+                    case Comillas -> resultado += "<Comillas>\t\t" + lex.lexema + "\n";
+                    case Cadena -> resultado += "<Tipo de dato>\t" + lex.lexema + "\n";
+                    case T_dato -> resultado += "<Tipo de dato>\t" + lex.lexema + "\n";
+                    case If -> resultado += "<Reservada if>\t" + lex.lexema + "\n";
+                    case Else -> resultado += "<Reservada else>\t" + lex.lexema + "\n";
+                    case Do -> resultado += "<Reservada do>\t" + lex.lexema + "\n";
+                    case While -> resultado += "<Reservada while>\t" + lex.lexema + "\n";
+                    case For -> resultado += "<Reservada while>\t" + lex.lexema + "\n";
+                    case Igual -> resultado += "<Operador igual>\t" + lex.lexema + "\n";
+                    case Suma -> resultado += "<Operador suma>\t" + lex.lexema + "\n";
+                    case Resta -> resultado += "<Operador resta>\t" + lex.lexema + "\n";
+                    case Multiplicacion -> resultado += "<Operador multiplicacion>\t" + lex.lexema + "\n";
+                    case Division -> resultado += "<Operador division>\t" + lex.lexema + "\n";
+                    case Op_logico -> resultado += "<Operador logico>\t" + lex.lexema + "\n";
+                    case Op_incremento -> resultado += "<Operador incremento>\t" + lex.lexema + "\n";
+                    case Op_relacional -> resultado += "<Operador relacional>\t" + lex.lexema + "\n";
+                    case Op_atribucion -> resultado += "<Operador atribucion>\t" + lex.lexema + "\n";
+                    case Op_booleano -> resultado += "<Operador booleano>\t" + lex.lexema + "\n";
+                    case Parentesis_a -> resultado += "<Parentesis de apertura>\t" + lex.lexema + "\n";
+                    case Parentesis_c -> resultado += "<Parentesis de cierre>\t" + lex.lexema + "\n";
+                    case Llave_a -> resultado += "<Llave de apertura>\t" + lex.lexema + "\n";
+                    case Llave_c -> resultado += "<Llave de cierre>\t" + lex.lexema + "\n";
+                    case Corchete_a -> resultado += "<Corchete de apertura>\t" + lex.lexema + "\n";
+                    case Corchete_c -> resultado += "<Corchete de cierre>\t" + lex.lexema + "\n";
+                    case Main -> resultado += "<Reservada main>\t" + lex.lexema + "\n";
+                    case P_coma -> resultado += "<Punto y coma>\t" + lex.lexema + "\n";
+                    case Identificador -> resultado += "<Identificador>\t" + lex.lexema + "\n";
+                    case Numero -> resultado += "<Numero>\t\t" + lex.lexema + "\n";
+                    case ERROR -> resultado += "<Simbolo no definido>\n";
+                    case Return -> resultado += "<Return>\t\t" + lex.lexema + "\n";
+                    default -> resultado += "<" + lex.lexema + " >\n";
                 }
                 
             } catch (IOException ex) {
                 Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
-            contador++;
         }
     }//GEN-LAST:event_btn_analiceActionPerformed
+
+    private void btn_sintacticoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sintacticoActionPerformed
+        txt_area_sintactico.setText("");
+        String texto = txt_area_source_code.getText();
+        Sintax s = new Sintax(new com.compiladores.analizador.LexerCup(new StringReader(texto)));
+        
+        try {
+            s.parse();
+            txt_area_sintactico.setText("Analisis realizado correctamente");
+            txt_area_sintactico.setForeground(new Color(25, 111, 61));
+        } catch (Exception ex) {
+            Symbol sym = s.getS();
+            txt_area_sintactico.setText("Error de sintaxis. Linea: " + (sym.right + 1) + ", Columna: " + (sym.left + 1) + ", Texto: \"" + sym.value + "\"");
+            txt_area_sintactico.setForeground(Color.RED);
+        }
+        
+    }//GEN-LAST:event_btn_sintacticoActionPerformed
 
     private void leerArchivo(File file) {
         try {
@@ -273,50 +354,6 @@ public class MainWindow extends javax.swing.JFrame {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    private FileReader createReader() {
-        FileReader fr = null;
-        try {   
-            fr = new FileReader(this.txt_fld_file_path.getText());
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return fr;
-    }
-    
-    private String contar_palabras_reservadas(String lexema) {
-        switch (lexema) {
-            case "INICIO" -> { 
-                this.contador_pr_inicio++;
-                return this.generadorResultadoContadorPr(this.contador_pr_inicio, "INICIO");
-            }
-            case "Clase" -> { 
-                this.contador_pr_clase++; 
-                return this.generadorResultadoContadorPr(this.contador_pr_clase, "Clase");
-            }
-            case "entero" -> { 
-                this.contador_pr_entero++; 
-                return this.generadorResultadoContadorPr(this.contador_pr_entero, "entero");
-            }
-            case "Cadena" -> { 
-                this.contador_pr_cadena++; 
-                return this.generadorResultadoContadorPr(this.contador_pr_cadena, "Cadena");
-            }
-            case "Metodo" -> { 
-                this.contador_pr_metodo++; 
-                return this.generadorResultadoContadorPr(this.contador_pr_metodo, "Metodo");
-            }
-            case "void" -> { 
-                this.contador_pr_void++; 
-                return this.generadorResultadoContadorPr(this.contador_pr_void, "void");
-            }
-        }
-        return null;
-    }
-    
-    private String generadorResultadoContadorPr(int contador, String tipo) {
-        return "PR " + tipo + " - Cantidad: " + contador + "\n";
     }
     
     /**
@@ -357,6 +394,7 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_analice;
     private javax.swing.JButton btn_attach_file;
+    private javax.swing.JButton btn_sintactico;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -365,10 +403,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea txt_area_reserved_words;
+    private javax.swing.JTextArea txt_area_sintactico;
     private javax.swing.JTextArea txt_area_source_code;
     private javax.swing.JTextArea txt_area_tokens_list;
     private javax.swing.JTextField txt_fld_file_path;

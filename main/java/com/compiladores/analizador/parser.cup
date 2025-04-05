@@ -5,24 +5,24 @@ import java_cup.runtime.Symbol;
 parser code
 {:
     private Symbol s;
-    
+
     public void syntax_error(Symbol s){
         this.s = s;
     }
 
     public Symbol getS(){
         return this.s;
-}
+    }
 :};
 
-terminal Linea, Comillas, T_dato, Cadena, If, Else, Do, While, For,
+terminal Linea, Return, Comillas, T_dato, Cadena, If, Else, Do, While, For,
     Igual, Suma, Resta, Multiplicacion, Division, Op_logico, Op_relacional,
     Op_atribucion, Op_incremento, Op_booleano, Parentesis_a, Parentesis_c,
     Llave_a, Llave_c, Corchete_a, Corchete_c, Main, P_coma, Identificador,
     Numero, ERROR;
 
-non terminal INICIO, SENTENCIA, DECLARACION, DECLARACION_FOR, IF, IF_ELSE,
-    WHILE, DO_WHILE, FOR, SENTENCIA_BOOLEANA, SENTENCIA_FOR;
+non terminal INICIO, SENTENCIA, DECLARACION, ASIGNACION, EXPRESION, TERM, FACTOR, DECLARACION_FOR, IF, IF_ELSE,
+    WHILE, DO_WHILE, FOR, SENTENCIA_BOOLEANA, SENTENCIA_FOR, RETURN;
 
 start with INICIO;
 
@@ -33,6 +33,8 @@ INICIO ::=
 SENTENCIA ::= 
     SENTENCIA DECLARACION |
     DECLARACION |
+    SENTENCIA ASIGNACION |
+    ASIGNACION |
     SENTENCIA IF | 
     IF |
     SENTENCIA IF_ELSE |
@@ -42,7 +44,9 @@ SENTENCIA ::=
     SENTENCIA DO_WHILE
     DO_WHILE |
     SENTENCIA FOR |
-    FOR
+    FOR |
+    SENTENCIA RETURN |
+    RETURN
 ;
 DECLARACION ::= 
     T_dato Identificador P_coma | 
@@ -54,6 +58,26 @@ DECLARACION ::=
     Cadena Identificador Igual Comillas Comillas P_coma |
     Cadena Identificador Op_atribucion Comillas Identificador Comillas P_coma |
     Cadena Identificador Igual Comillas Identificador Comillas P_coma
+;
+ASIGNACION ::=
+    Identificador Igual EXPRESION P_coma
+;
+
+EXPRESION ::=
+    EXPRESION Suma TERM |
+    EXPRESION Resta TERM |
+    TERM
+;
+TERM ::= 
+    TERM Multiplicacion FACTOR |
+    TERM Division FACTOR |
+    FACTOR
+;
+
+FACTOR ::= 
+    Parentesis_a EXPRESION Parentesis_c |
+    Numero |
+    Identificador
 ;
 IF ::= If Parentesis_a SENTENCIA_BOOLEANA Parentesis_c Llave_a SENTENCIA Llave_c
 ;
@@ -81,4 +105,7 @@ DECLARACION_FOR ::=
     Identificador Op_atribucion Numero |
     Identificador Op_incremento | 
     Op_incremento Identificador
+;
+RETURN ::=
+    Return EXPRESION P_coma
 ;
